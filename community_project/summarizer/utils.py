@@ -1,25 +1,5 @@
-#  unit tests for utils.
-
-from django.test import TestCase
-from .utils import validate_youtube_url, convert_markdown_to_youtube_format
-
-class UtilsTestCase(TestCase):
-    def test_validate_youtube_url(self):
-        self.assertEqual("0123456789a", validate_youtube_url("https://www.youtube.com/live/0123456789a"))
-        self.assertEqual("0123456789a", validate_youtube_url("https://www.youtube.com/live/0123456789a&abc=123"))
-        self.assertEqual("_123456789a", validate_youtube_url("https://www.youtube.com/watch?v=_123456789a&abc=123"))
-        self.assertEqual("_123456789a", validate_youtube_url("https://youtube.com/watch?v=_123456789a&abc=123"))
-        self.assertEqual("-123456789a", validate_youtube_url("https://www.youtu.be/-123456789a&abc=123"))
-        self.assertEqual("-123456789a", validate_youtube_url("https://youtu.be/-123456789a&abc=123"))
-        self.assertFalse(validate_youtube_url("http://www.youtube.com/live/0123456789a")) # not https
-        self.assertFalse(validate_youtube_url("https://example.com"))
-
-    def test_convert_markdown_to_youtube_format(self):
-        text = r"""**Title:**
-Let's **go** to http://www.google.com/search?q=hello."""
-        expected = r"""*Title:*
-Let's *go* to http://www.google-dot-com/search?q=hello."""
-        self.assertEqual(expected, convert_markdown_to_youtube_format(text))
+# summarizer/utils.py
+# utility functions (URL validation, VTT parsing, markdown tweaks).
 import re
 import webvtt
 
@@ -64,4 +44,3 @@ def convert_markdown_to_youtube_format(text):
         text,
     )
     return text
-

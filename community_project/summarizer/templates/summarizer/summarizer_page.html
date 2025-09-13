@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Summarizer</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        form { margin-bottom: 20px; }
+        .summary-card { border: 1px solid #ccc; padding: 15px; margin-top: 20px; white-space: pre-wrap; }
+        .error { color: red; border: 1px solid red; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>YouTube Transcript Summarizer</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Summarize</button>
+    </form>
+
+    {% if error_message %}
+        <div class="error">
+            <p><strong>Error:</strong> {{ error_message }}</p>
+        </div>
+    {% endif %}
+
+    {% if summary %}
+        <div class="summary-card">
+            <h2>Summary for <a href="{{ summary.video.original_url }}" target="_blank">{{ summary.video.video_id }}</a></h2>
+            <p><strong>Model Used:</strong> {{ summary.model_used }}</p>
+            <hr>
+            <h3>Formatted for YouTube Comments:</h3>
+            <pre>{{ summary.formatted_summary_text }}</pre>
+            <hr>
+            <h3>Raw Markdown Output:</h3>
+            <pre>{{ summary.summary_text }}</pre>
+        </div>
+    {% endif %}
+</body>
+</html>
+
