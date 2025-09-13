@@ -137,3 +137,6 @@ With a strong community foundation, we can build the advanced features that set 
 3.  **AI-Powered Q&A:**
     *   Add a form on the summary page to "Ask a question about this video."
     *   The backend will construct a new, detailed prompt for the Gemini API, including the user's question, the full transcript, and the generated summary. The AI's response will be displayed on the page.
+
+
+StreamingHttpResponse
