@@ -11,6 +11,18 @@ uv run manage.py runserver
 
 ```
 cd community_project
-uv run python ../manage.py startapp summarizer
+uv run python manage.py startapp summarizer
+
+```
+
+
+```
+export GEMINI_API_KEY=`cat ~/api_key.txt`
+uv run python manage.py makemigrations summarizer
+uv run python manage.py migrate
+
+```
+```
+uv run python manage.py runserver
 
 ```
