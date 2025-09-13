@@ -8,9 +8,6 @@ from google.genai import types
 from .models import Video, Transcript, Summary
 from .utils import parse_vtt_file, convert_markdown_to_youtube_format
 
-# Configure the Gemini API client
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-
 class SummaryGenerationError(Exception):
     """Custom exception for errors during summary generation."""
     pass
@@ -43,7 +40,7 @@ def _download_transcript(video_id: str) -> str:
 
 
 def _generate_summary_with_gemini(transcript: str, model_name: str) -> str:
-    """Calls the Gemini API to generate a summary."""
+    """Calls the Gemini API to generate a summary using the genai.Client streaming API."""
     prompt = f"""
     I don't want to watch the video. 
     Based on the following transcript with timestamps, create a self-contained, detailed bullet-point summary that I can understand without watching the video.
@@ -53,11 +50,38 @@ def _generate_summary_with_gemini(transcript: str, model_name: str) -> str:
     {transcript}
     """
 
-    model = genai.GenerativeModel(model_name)
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+    model = model_name  # e.g. "gemini-2.5-pro"
+
+    contents = [
+        types.Content(
+            role="user",
+            parts=[types.Part.from_text(text=prompt)],
+        ),
+    ]
+
+    tools = [
+        types.Tool(url_context=types.UrlContext()),
+        types.Tool(googleSearch=types.GoogleSearch()),
+    ]
+
+    generate_content_config = types.GenerateContentConfig(
+        thinking_config=types.ThinkingConfig(thinking_budget=32768),
+        tools=tools,
+    )
 
     try:
-        response = model.generate_content(prompt)
-        return response.text
+        summary_chunks = []
+        for chunk in client.models.generate_content_stream(
+            model=model,
+            contents=contents,
+            config=generate_content_config,
+        ):
+            # chunk.text may be None for some streamed events; guard and append
+            if getattr(chunk, "text", None):
+                summary_chunks.append(chunk.text)
+        return "".join(summary_chunks)
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
         raise SummaryGenerationError(f"Failed to generate summary from the AI model. Original error: {e}")
@@ -94,4 +118,3 @@ def generate_and_save_summary(video_id: str, original_url: str, model_name: str)
     )
 
     return summary
-
