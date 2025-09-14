@@ -3,6 +3,7 @@
 import re
 import webvtt
 
+
 def validate_youtube_url(url):
     """Validates various YouTube URL formats. Returns the video ID string or False."""
     patterns = [
@@ -15,9 +16,10 @@ def validate_youtube_url(url):
             return match.group(1)
     return False
 
+
 def parse_vtt_file(vtt_content_string):
     """Parses VTT content from a string. Returns a formatted transcript string."""
-    lines = vtt_content_string.strip().split('\n')
+    lines = vtt_content_string.strip().split("\n")
     captions = webvtt.read_buffer(iter(lines))
 
     output = []
@@ -25,8 +27,8 @@ def parse_vtt_file(vtt_content_string):
     for caption in captions:
         # Simple deduplication
         if caption.text != last_text:
-            timestamp = caption.start.split('.')[0] # Remove milliseconds
-            text = caption.text.replace('\n', ' ').strip()
+            timestamp = caption.start.split(".")[0]  # Remove milliseconds
+            text = caption.text.replace("\n", " ").strip()
             output.append(f"{timestamp} {text}")
             last_text = caption.text
 
@@ -35,7 +37,7 @@ def parse_vtt_file(vtt_content_string):
 
 def convert_markdown_to_youtube_format(text):
     """Adapts markdown for YouTube comments."""
-    text = text.replace("**:", ":**").replace("**,", ",**").replace("**."," .**")
+    text = text.replace("**:", ":**").replace("**,", ",**").replace("**.", " .**")
     text = text.replace("**", "*")
     text = re.sub(r"^##\s*(.*)", r"*\1*", text, flags=re.MULTILINE)
     text = re.sub(

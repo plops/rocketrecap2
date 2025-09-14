@@ -2,6 +2,7 @@
 
 from django import forms
 
+
 class SummarizerForm(forms.Form):
     GEMINI_MODELS = [
         ("gemini-2.5-flash", "Gemini 2.5 Flash"),
@@ -10,7 +11,9 @@ class SummarizerForm(forms.Form):
 
     youtube_url = forms.URLField(
         label="YouTube Video URL",
-        widget=forms.URLInput(attrs={'placeholder': 'https://www.youtube.com/watch?v=...'}),
+        widget=forms.URLInput(
+            attrs={"placeholder": "https://www.youtube.com/watch?v=..."}
+        ),
         required=True,
     )
     model = forms.ChoiceField(
@@ -18,4 +21,3 @@ class SummarizerForm(forms.Form):
         label="Select AI Model",
         required=True,
     )
-
